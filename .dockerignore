@@ -1,0 +1,15 @@
+node_modules
+.next
+.build
+out
+dist
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+*.log
+*.md
+!nextjs_space/STYLE_GUIDE.md
+nextjs_space/.env
+nextjs_space/.env.*

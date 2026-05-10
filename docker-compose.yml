@@ -1,0 +1,61 @@
+###############################################################################
+# ThreatPulse Intel — Docker Compose Stack
+#
+# Usage:
+#   docker compose up -d --build
+#   docker compose logs -f app
+#   docker compose down
+#
+# First run will auto-create tables and seed demo data.
+# Default login:  admin@threatpulse.com / admin123!
+###############################################################################
+
+services:
+  # ── PostgreSQL Database ───────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: threatpulse-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-threatpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-threatpulse_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-threatpulse_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-threatpulse} -d ${POSTGRES_DB:-threatpulse_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - threatpulse-net
+
+  # ── ThreatPulse Intel Application ────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: threatpulse-app
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-threatpulse}:${POSTGRES_PASSWORD:-threatpulse_secret}@db:5432/${POSTGRES_DB:-threatpulse_db}?connect_timeout=15
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-me-in-production-use-openssl-rand-base64-32}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - threatpulse-net
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  threatpulse-net:
+    driver: bridge
