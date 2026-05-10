@@ -76,7 +76,7 @@ COPY --from=builder /app/node_modules/resolve-pkg-maps /app/prisma-tools/node_mo
 COPY --from=builder /app/node_modules/bcryptjs /app/prisma-tools/node_modules/bcryptjs
 
 # Install pg driver for the entrypoint database readiness check
-RUN cd /app/prisma-tools && npm install --no-save pg 2>/dev/null || true
+"COPY --from=builder /app/node_modules/pg /app/prisma-tools/node_modules/pg"
 
 # Create .bin links for npx to find prisma and tsx
 RUN mkdir -p /app/prisma-tools/node_modules/.bin && \

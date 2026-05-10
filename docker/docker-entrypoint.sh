@@ -8,7 +8,7 @@ echo "╚═══════════════════════�
 # Wait for PostgreSQL to be ready
 echo "⏳ Waiting for database..."
 RETRIES=30
-until node -e "
+until NODE_PATH=/app/prisma-tools/node_modules node -e "
 const { Client } = require('pg');
 const c = new Client({ connectionString: process.env.DATABASE_URL });
 c.connect().then(() => { c.end(); process.exit(0); }).catch(() => process.exit(1));
