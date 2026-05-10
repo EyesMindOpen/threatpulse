@@ -1,13 +1,13 @@
 ###############################################################################
-# ThreatPulse Intel — Docker Build
-# Multi-stage: deps → build → production (standalone)
+# ThreatPulse Intel - Docker Build
+# Multi-stage: deps -> build -> production (standalone)
 ###############################################################################
 
-# ── Base ────────────────────────────────────────────────────────────────────
+# -- Base --------------------------------------------------------------------
 FROM node:20-alpine AS base
 RUN apk add --no-cache libc6-compat openssl
 
-# ── Install dependencies ────────────────────────────────────────────────────
+# -- Install dependencies ----------------------------------------------------
 FROM base AS deps
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY nextjs_space/package.json ./package.json
 COPY nextjs_space/yarn.lock* ./
 RUN yarn install --frozen-lockfile --production=false 2>/dev/null || yarn install --production=false
 
-# ── Build ───────────────────────────────────────────────────────────────────
+# -- Build -------------------------------------------------------------------
 FROM base AS builder
 WORKDIR /app
 
@@ -41,7 +41,7 @@ ENV NEXTAUTH_URL="http://localhost:3000"
 
 RUN yarn build
 
-# ── Production ──────────────────────────────────────────────────────────────
+# -- Production --------------------------------------------------------------
 FROM base AS runner
 WORKDIR /app
 
@@ -74,9 +74,6 @@ COPY --from=builder /app/node_modules/esbuild /app/prisma-tools/node_modules/esb
 COPY --from=builder /app/node_modules/get-tsconfig /app/prisma-tools/node_modules/get-tsconfig
 COPY --from=builder /app/node_modules/resolve-pkg-maps /app/prisma-tools/node_modules/resolve-pkg-maps
 COPY --from=builder /app/node_modules/bcryptjs /app/prisma-tools/node_modules/bcryptjs
-
-# Install pg driver for the entrypoint database readiness check
-"COPY --from=builder /app/node_modules/pg /app/prisma-tools/node_modules/pg"
 
 # Create .bin links for npx to find prisma and tsx
 RUN mkdir -p /app/prisma-tools/node_modules/.bin && \
