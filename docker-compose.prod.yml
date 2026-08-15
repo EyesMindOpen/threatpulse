@@ -83,6 +83,11 @@ services:
       COLLECTOR_INTERVAL_MINUTES: ${COLLECTOR_INTERVAL_MINUTES:-15}
       COLLECTOR_ORG_SLUG: ${COLLECTOR_ORG_SLUG:-threatpulse-demo}
       NVD_API_KEY: ${NVD_API_KEY:-}
+      # Weekly executive summary email (leadership report).
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      WEEKLY_SUMMARY_ENABLED: ${WEEKLY_SUMMARY_ENABLED:-true}
+      WEEKLY_SUMMARY_CRON: ${WEEKLY_SUMMARY_CRON:-0 8 * * 1}
+      RUN_ONCE_SUMMARY: ${RUN_ONCE_SUMMARY:-false}
       # Lightweight HTTP control server used by the app's Collector Health dashboard.
       COLLECTOR_CONTROL_PORT: ${COLLECTOR_CONTROL_PORT:-9464}
       COLLECTOR_CONTROL_TOKEN: ${COLLECTOR_CONTROL_TOKEN:-}

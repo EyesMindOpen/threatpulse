@@ -72,6 +72,11 @@ services:
       COLLECTOR_INTERVAL_MINUTES: ${COLLECTOR_INTERVAL_MINUTES:-15}
       COLLECTOR_ORG_SLUG: ${COLLECTOR_ORG_SLUG:-threatpulse-demo}
       NVD_API_KEY: ${NVD_API_KEY:-}
+      # Weekly executive summary email (leadership report).
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      WEEKLY_SUMMARY_ENABLED: ${WEEKLY_SUMMARY_ENABLED:-true}
+      WEEKLY_SUMMARY_CRON: ${WEEKLY_SUMMARY_CRON:-0 8 * * 1}
+      RUN_ONCE_SUMMARY: ${RUN_ONCE_SUMMARY:-false}
       LOG_LEVEL: ${LOG_LEVEL:-debug}
       NODE_ENV: development
     volumes:
