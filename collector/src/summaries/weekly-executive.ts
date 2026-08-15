@@ -230,7 +230,7 @@ export async function runWeeklyExecutiveSummary(): Promise<{
     Medium: '#eab308',
     Low: '#10b981',
   };
-  const sevKeys = ['Critical', 'High', 'Medium', 'Low'];
+  const sevKeys = ['Critical', 'High', 'Medium', 'Low'] as const;
   const sevBuckets = bucketBySeverityDay(newThreats, since, now);
   const volumeChart = chartUrl({
     type: 'bar',
