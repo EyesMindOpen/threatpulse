@@ -35,6 +35,7 @@ import { collectKev } from './sources/kev';
 import { collectNvd } from './sources/nvd';
 import { collectRss } from './sources/rss';
 import { startControlServer } from './control';
+import { runWeeklyExecutiveSummary } from './summaries/weekly-executive';
 
 const log = createLogger('collector');
 
@@ -43,6 +44,9 @@ const INTERVAL_MINUTES = Math.max(
   Number(process.env.COLLECTOR_INTERVAL_MINUTES || 15),
 );
 const RUN_ONCE = String(process.env.RUN_ONCE || '').toLowerCase() === 'true';
+const WEEKLY_SUMMARY_ENABLED = envFlag('WEEKLY_SUMMARY_ENABLED', true);
+const WEEKLY_SUMMARY_CRON = process.env.WEEKLY_SUMMARY_CRON || '0 8 * * 1';
+const RUN_ONCE_SUMMARY = String(process.env.RUN_ONCE_SUMMARY || '').toLowerCase() === 'true';
 
 type SourceFn = () => Promise<ThreatRecord[]>;
 
@@ -193,6 +197,32 @@ async function main(): Promise<void> {
     runCycle().catch((err) => log.error('Scheduled cycle error', String(err)));
   });
   log.info(`Scheduled collection with cron "${schedule}".`);
+
+  // Weekly executive summary email (leadership report).
+  if (RUN_ONCE_SUMMARY) {
+    log.info('RUN_ONCE_SUMMARY set - sending weekly executive summary then exiting.');
+    try {
+      const res = await runWeeklyExecutiveSummary();
+      log.info('Weekly summary: ' + res.message);
+    } catch (err) {
+      log.error('Weekly summary failed: ' + (err instanceof Error ? err.message : String(err)));
+    }
+    await closePool();
+    process.exit(0);
+  }
+
+  if (WEEKLY_SUMMARY_ENABLED) {
+    if (cron.validate(WEEKLY_SUMMARY_CRON)) {
+      cron.schedule(WEEKLY_SUMMARY_CRON, () => {
+        runWeeklyExecutiveSummary().catch((err) => log.error('Weekly summary error', String(err)));
+      });
+      log.info('Scheduled weekly executive summary with cron: ' + WEEKLY_SUMMARY_CRON);
+    } else {
+      log.error('Invalid WEEKLY_SUMMARY_CRON: ' + WEEKLY_SUMMARY_CRON + ' - weekly summary disabled.');
+    }
+  } else {
+    log.info('Weekly executive summary disabled via env.');
+  }
 }
 
 // ── Graceful shutdown ──────────────────────────────────────────────────────
