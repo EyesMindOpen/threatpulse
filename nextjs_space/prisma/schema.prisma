@@ -103,6 +103,7 @@ model User {
   statusChanges          ThreatStatusHistory[]   @relation("ThreatStatusChangedBy")
   assignedThreats        Threat[]                @relation("ThreatAssignedTo")
   savedFilters           SavedFilter[]
+  confluenceConnections  ConfluenceConnection[]
 
   @@index([organizationId])
   @@index([departmentId])
@@ -824,4 +825,23 @@ model IntelligenceSource {
   updatedAt         DateTime @updatedAt
 
   @@index([organizationId])
+}
+
+model ConfluenceConnection {
+  id                String    @id @default(cuid())
+  userId            String
+  displayName       String?
+  baseUrl           String
+  email             String
+  apiToken          String
+  enabled           Boolean   @default(true)
+  lastTestedAt      DateTime?
+  lastTestStatus    String    @default("untested")
+  lastError         String?
+  confluenceUserKey String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

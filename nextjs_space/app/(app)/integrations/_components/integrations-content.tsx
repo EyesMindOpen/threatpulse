@@ -13,6 +13,7 @@ import {
   RefreshCw, ChevronDown, ChevronRight, ExternalLink, Clock, Search, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
+import ConfluenceSetup from './confluence-setup';
 
 /* ─── Feed Sources (18) ─── */
 const feedSources = [
@@ -675,6 +676,9 @@ export default function IntegrationsContent() {
           })}
         </div>
       )}
+      {/* Per-user Confluence setup */}
+      <ConfluenceSetup />
+
     </div>
   );
 }
