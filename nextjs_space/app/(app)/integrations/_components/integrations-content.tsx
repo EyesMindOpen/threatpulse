@@ -10,7 +10,7 @@ import { FadeIn, SlideIn } from '@/components/ui/animate';
 import {
   Plug, Ticket, Database, Lock, Mail, CheckCircle, XCircle, Eye, EyeOff,
   Save, TestTube, Rss, Globe, Shield, Zap, ToggleLeft, ToggleRight,
-  RefreshCw, ChevronDown, ChevronRight, ExternalLink, Clock, Search
+  RefreshCw, ChevronDown, ChevronRight, ExternalLink, Clock, Search, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -71,6 +71,16 @@ const serviceIntegrations = [
       { key: 'BREVO_API_KEY', label: 'API Key', placeholder: 'Your Brevo API key', secret: true },
     ],
   },
+  {
+    id: 'confluence', name: 'Confluence', description: 'Publish threat intelligence summaries and remediation playbooks to Confluence pages via the Confluence Cloud REST API.',
+    icon: FileText, category: 'documentation',
+    fields: [
+      { key: 'CONFLUENCE_URL', label: 'Confluence URL', placeholder: 'https://company.atlassian.net' },
+      { key: 'CONFLUENCE_EMAIL', label: 'Atlassian Email', placeholder: 'user@company.com' },
+      { key: 'CONFLUENCE_API_TOKEN', label: 'API Token', placeholder: 'Your Atlassian API token', secret: true },
+      { key: 'CONFLUENCE_SPACE_KEY', label: 'Default Space Key', placeholder: 'SEC' },
+    ],
+  },
 ];
 
 const categoryLabels: Record<string, string> = {
@@ -81,6 +91,7 @@ const categoryLabels: Record<string, string> = {
   vendor: 'Vendor Advisories',
   government: 'Government',
   exploit: 'Exploit Sources',
+  documentation: 'Documentation',
 };
 
 const categoryColors: Record<string, string> = {
@@ -91,6 +102,7 @@ const categoryColors: Record<string, string> = {
   vendor: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
   government: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
   exploit: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  documentation: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
 };
 
 const frequencyOptions = [

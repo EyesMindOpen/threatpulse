@@ -92,6 +92,29 @@ export async function POST(req: NextRequest) {
         }
         break;
       }
+      case 'confluence': {
+        const { CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN } = config || {};
+        if (!CONFLUENCE_URL || !CONFLUENCE_EMAIL || !CONFLUENCE_API_TOKEN) {
+          return NextResponse.json({ error: 'All Confluence fields are required', success: false }, { status: 400 });
+        }
+        try {
+          const origin = new URL(CONFLUENCE_URL).origin;
+          const auth = Buffer.from(`${CONFLUENCE_EMAIL}:${CONFLUENCE_API_TOKEN}`).toString('base64');
+          const res = await fetch(`${origin}/wiki/rest/api/user/current`, {
+            headers: { Authorization: `Basic ${auth}`, Accept: 'application/json' },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            success = true;
+            message = `Connected as ${data?.displayName || data?.email || 'user'}`;
+          } else {
+            message = `Confluence returned ${res.status}: ${res.statusText}`;
+          }
+        } catch (e: any) {
+          message = `Connection failed: ${e.message}`;
+        }
+        break;
+      }
       default: {
         // Handle feed tests — attempt to fetch the endpoint
         if (config?.endpoint) {
