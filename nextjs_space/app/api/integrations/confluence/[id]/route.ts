@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/db';
 
 // PATCH /api/integrations/confluence/[id] — update (enable/disable, edit fields)
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
